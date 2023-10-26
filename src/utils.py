@@ -10,7 +10,6 @@ from tqdm import tqdm
 import random
 import copy
 import matplotlib.pyplot as plt
-import neurokit2 as nk
 
 import torch
 import torch.nn as nn
@@ -395,36 +394,3 @@ def saveplot_12lead(savepth, bs, sample, epoch, lead=1, model='wavegan'):
     plt.tight_layout()
     plt.savefig(os.path.join(savepth, f'fixnoise_epoch_{epoch}.png'))
     plt.close()
-
-
-def ecg_feature_matrix(wf):
-    try:
-        _, rpeaks = nk.ecg_peaks(wf[1], sampling_rate=500)
-        signal_cwt, waves_cwt = nk.ecg_delineate(wf[1], rpeaks, sampling_rate=500, method="dwt")
-        
-        waves_cwt['ECG_R_Peaks'] = rpeaks['ECG_R_Peaks']
-        waves_cwt['ECG_postR_Peaks'] = list(rpeaks['ECG_R_Peaks'][1:]) + [0]
-        waves_cwt['ECG_postP_Peaks'] = list(waves_cwt['ECG_P_Peaks'][1:])+ [0]
-        waves_cwt['ECG_postT_Peaks'] = list(waves_cwt['ECG_T_Peaks'][1:]) + [0]
-        waves_cwt['ECG_postP_Onsets'] = list(waves_cwt['ECG_P_Onsets'][1:]) + [0]
-
-        waves_cwt = pd.DataFrame(waves_cwt)
-        waves_cwt = waves_cwt.iloc[:-2]
-
-        waves_cwt['P_wave_duration'] = (waves_cwt['ECG_P_Offsets'] - waves_cwt['ECG_P_Onsets']) / 500
-        waves_cwt['PR_interval'] = (waves_cwt['ECG_R_Onsets'] - waves_cwt['ECG_P_Onsets']) / 500
-        waves_cwt['PP_interval'] = (waves_cwt['ECG_postP_Peaks'] - waves_cwt['ECG_P_Peaks']) / 500
-        waves_cwt['PR_segment'] = (waves_cwt['ECG_R_Onsets'] - waves_cwt['ECG_P_Offsets']) / 500
-        waves_cwt['QRS_duration'] = (waves_cwt['ECG_R_Offsets'] - waves_cwt['ECG_R_Onsets']) / 500
-        waves_cwt['QT_duration'] = (waves_cwt['ECG_T_Offsets'] - waves_cwt['ECG_R_Onsets']) / 500
-        waves_cwt['RR_interval'] = (waves_cwt['ECG_postR_Peaks'] - waves_cwt['ECG_R_Peaks']) / 500
-        waves_cwt['ST_segment'] = (waves_cwt['ECG_T_Onsets'] - waves_cwt['ECG_R_Offsets']) / 500
-        waves_cwt['ST_T_segment'] = (waves_cwt['ECG_T_Offsets'] - waves_cwt['ECG_R_Offsets']) / 500
-        waves_cwt['TP_interval'] = (waves_cwt['ECG_postP_Onsets'] - waves_cwt['ECG_T_Offsets']) / 500
-        
-        ecg_features = np.array(waves_cwt[ecg_feature_cols].mean())
-        
-        return ecg_features
-    
-    except:
-        return [0]

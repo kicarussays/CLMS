@@ -33,7 +33,9 @@ class Supervised_Learning(Components):
         
         if self.args.mode == 'Supervised' and self.args.domain == 'single' and self.singlelast:
             _, _local_site_data, _ = LoadSingleData(seed, self.args.file)
-                
+        
+
+        init_model_params = self.model.parameters()
         for e in range(self.args.epoch):
             self.model.train()
             loss_sum = 0
@@ -49,6 +51,12 @@ class Supervised_Learning(Components):
                 
                 output = self.model(ecg, torch.cat((age.view(-1, 1), sex.view(-1, 1)), dim=1))
                 loss = self.criterion(output, flag.type(torch.long))
+                if self.args.mode == 'FedProx':
+                    w_diff = torch.tensor(0., device=d)
+                    for w, w_t in zip(init_model_params, self.model.parameters()):
+                        w_diff += torch.pow(torch.norm(w - w_t), 2)
+
+                    loss += self.args.mu / 2. * w_diff
                 
                 self.optimizer.zero_grad()
                 loss.backward()
@@ -113,7 +121,7 @@ class Federated_Learning(Components):
                 
                 _use_model = copy.deepcopy(global_model)
                 
-                if self.args.mode != 'FedAvg' and r != 0:
+                if self.args.mode not in ('FedAvg', 'FedProx') and r != 0:
                     _use_weight = _use_model.state_dict()
                     _use_weight.update(local_trainer[site])
                     _use_model.load_state_dict(_use_weight)
@@ -128,7 +136,7 @@ class Federated_Learning(Components):
                     weight=all_weights[site]
                 )
                 
-                if self.args.mode == 'FedAvg':
+                if self.args.mode in ('FedAvg', 'FedProx'):
                     global_trainer[site], _ = Trainer.train()
                 else:
                     assert self.args.mode not in ('FedAvg'), f"{self.args.mode} is not applicable"
@@ -357,28 +365,6 @@ class Continual_Learning(Components):
             
         
         return _get_weight, local_trainer            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

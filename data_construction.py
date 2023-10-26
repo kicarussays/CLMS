@@ -20,7 +20,7 @@ if not os.path.exists('data/ptb.pickle'):
     train_files = pd.read_csv(fpath + "ptbxl_database.csv")
     ecgs = {}
 
-    ray.init(num_cpus=64)
+    ray.init(num_cpus=112)
 
     @ray.remote
     def denoising(t):
@@ -57,7 +57,7 @@ if not os.path.exists('data/cpsc.pickle'):
     flist = list(set([i.split('.')[0] for i in os.listdir(fpath)]))
     flist.sort()
 
-    ray.init(num_cpus=64)
+    ray.init(num_cpus=112)
 
     @ray.remote
     def fsave(fname):
@@ -121,7 +121,7 @@ if not os.path.exists('data/shaoxing.pickle'):
     flist = list(set([i.split(' ')[-1].split('.')[0] for i in flist if 'JS' in i]))
     flist.sort()
 
-    ray.init(num_cpus=64)
+    ray.init(num_cpus=112)
 
     @ray.remote
     def fsave(fname):
@@ -176,7 +176,7 @@ if not os.path.exists('data/georgia.pickle'):
     flist = list(set([i.split('.')[0] for i in os.listdir(fpath)]))
     flist.sort()
 
-    ray.init(num_cpus=64)
+    ray.init(num_cpus=112)
     train_ecg = [fsave.remote(fname) for fname in tqdm(flist)]
     train_ecg = ray.get(train_ecg)    
     ray.shutdown()

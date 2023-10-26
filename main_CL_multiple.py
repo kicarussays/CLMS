@@ -16,19 +16,21 @@ from src.models import ResNet1d
 from src.learning import Supervised_Learning, Federated_Learning, Continual_Learning
 from src.config import today, seed
 
-
+torch.set_num_threads(16)
 
 parser = argparse.ArgumentParser(description='classifier Training')
 parser.add_argument('--device', '-d', type=int, 
                     help='GPU Device Number', default=0)
 parser.add_argument('--mode', '-m', type=str, 
-                    help='Supervised or FedAvg or Finetuning or Continual')
+                    help='Supervised or FedAvg or FedProx or Finetuning or Continual')
 parser.add_argument('--bs', type=int, 
                     help='Batch Size', default=256)
 parser.add_argument('--lr', type=float, 
                     help='Learning Rate', default=0.0001)
 parser.add_argument('--round', '-r', type=int, 
                     help='Iteration Round for Federated Learning', default=30)
+parser.add_argument('--mu', type=float, 
+                    help='hyperparameter for FedProx', default=0.01)
 parser.add_argument('--epoch', '-e', type=int, 
                     help='Max Epochs for Each Site', default=100)
 parser.add_argument('--valtime', '-v', type=int, 
@@ -46,7 +48,7 @@ parser.add_argument('--delta', type=float,
 parser.add_argument('--domain', type=str, 
                     help='Domain', default='multiple')
 parser.add_argument('--order', type=str, 
-                    help='Small to Large or Large to Small (stl, lts)', default='stl')
+                    help='Small to Large or Large to Small (stl, lts)', default='eth')
 
 
 
@@ -65,7 +67,7 @@ def main():
         
     if args.mode == 'Supervised':
         params = f'{today}_{args.mode}_{args.bs}_{args.lr}_{args.epoch}_{args.seed}'
-    elif args.mode in ('FedAvg'):
+    elif args.mode in ('FedAvg', 'FedProx'):
         params = f'{today}_{args.mode}_{args.bs}_{args.lr}_{args.epoch}_{args.round}_{args.seed}'
     elif args.mode in ('Finetuning'):
         params = f'{today}_{args.mode}_{args.order}_{args.bs}_{args.lr}_{args.epoch}_{args.seed}'
@@ -141,7 +143,7 @@ def main():
         
     
     
-    elif args.mode in ('FedAvg'):
+    elif args.mode in ('FedAvg', 'FedProx'):
         model = ResNet1d()
         
         Trainer = Federated_Learning(
@@ -219,7 +221,7 @@ def main():
             loss, roc_auc, pr_auc = Trainer.evaluation(model.to(device), DataLoader(useDataset(global_site_data[site]), batch_size=args.bs, shuffle=False))
             logging.debug("Site [{}] AUROC: {:.4f}, AUPRC: {:.4f}".format(site, roc_auc, pr_auc))
     
-    assert args.mode in ('Supervised', 'FedAvg', 'Finetuning', 'Continual'), f'{args.mode} is not the case.'
+    assert args.mode in ('Supervised', 'FedAvg', 'FedProx', 'Finetuning', 'Continual'), f'{args.mode} is not the case.'
 
 
 if __name__ == "__main__":
