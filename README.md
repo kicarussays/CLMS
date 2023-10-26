@@ -15,6 +15,7 @@ Deep learning has been increasingly utilized in the medical field and achieved m
 ## Requirements
 If you use Docker,
 - Docker image: ufoym/deepo
+
 Else,
 - Python: 3.8.10
 - Pytorch: 1.12.0
