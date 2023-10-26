@@ -37,8 +37,8 @@ python main_GAN_multiple.py --site [ptb, shaoxing, georgia, cpsc]
 ```bash
 python main_CL_single.py -m Supervised
 python main_CL_multiple.py -m Supervised
-python main_CL_single.py -m FedAvg -e 20 -r 30
-python main_CL_multiple.py -m FedAvg -e 20 -r 30
+python main_CL_single.py -m [FedAvg, FedProx] -e 20 -r 30
+python main_CL_multiple.py -m [FedAvg, FedProx] -e 20 -r 30
 python main_CL_single.py -m [Finetuning, Continual] --es 1 --order [stl, lts]
 python main_CL_multiple.py -m [Finetuning, Continual] --es 1 --order [stl, lts]
 ```
