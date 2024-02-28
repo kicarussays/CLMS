@@ -1,4 +1,4 @@
-# Continual Learning Framework for a Multicenter Study
+# Continual Learning Framework for a Multicenter Study with an Application to Electrocardiogram
 
 <p align="center"><img src="https://img.shields.io/badge/Pytorch-EE4C2C?style=flat&logo=TypeScript&logoColor=white"/></p>
 
