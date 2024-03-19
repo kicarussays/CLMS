@@ -2,7 +2,7 @@
 
 <p align="center"><img src="https://img.shields.io/badge/Pytorch-EE4C2C?style=flat&logo=TypeScript&logoColor=white"/></p>
 
-The official source code for Continual Learning Framework for a Multicenter Study paper.
+The official source code for DOI https://doi.org/10.1186/s12911-024-02464-9
 
 ## Overview
 Deep learning has been increasingly utilized in the medical field and achieved many goals. Since the size of available data dominates the performance of deep learning, many medical institutions are conducting joint research. However, sharing data is usually prohibited owing to the risk of privacy invasion. Federated learning is a reasonable idea to train distributed data without direct access; however, a central server to merge and distribute models is needed, which is expensive and hardly approved due to various legal regulations. In this paper, we propose a continual learning framework for a multicenter study, which does not require a central server and accomplishes the generalized model for a multicenter study by suppressing catastrophic forgetting. We used four independent electrocardiogram datasets for a multicenter study and trained the arrhythmia detection model. We compared our proposed framework to supervised and federated learning methods and finetuning without any regulation to retain preceding knowledge. The proposed framework achieved stable performance for all involved datasets without a central server and access to the past data compared to the others. Furthermore, we first proposed the continual learning method selection algorithm based on a generative adversarial network, which evaluates various continual learning methods prospectively, not ex post facto.
